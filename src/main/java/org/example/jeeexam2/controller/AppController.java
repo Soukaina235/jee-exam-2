@@ -1,7 +1,10 @@
 package org.example.jeeexam2.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.example.jeeexam2.entity.Employee;
+import org.example.jeeexam2.entity.Project;
 import org.example.jeeexam2.service.EmployeeService;
+import org.example.jeeexam2.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -14,14 +17,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Controller
 public class AppController {
     @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
+    @Autowired
+    private final ProjectService projectService;
 
-    @GetMapping("/employee/home")
+    @GetMapping("/home")
     public String handleStudentHome() {
-        return "pages/employee/home";
+        return "home";
     }
 
     @GetMapping("/employees")
@@ -35,19 +41,20 @@ public class AppController {
                 .map(GrantedAuthority::getAuthority)
                 .orElse("");
 
-
         return "employees";
     }
 
     @GetMapping("students/add")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     public String showAddStudentForm(Model model) {
+        List<Project> projects = projectService.getAllProjects();
+        model.addAttribute("projects", projects);
         model.addAttribute("employee", new Employee());
-        return "add_employee"; // Thymeleaf template for the form
+        return "add_employee";
     }
 
     @PostMapping("students/add")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     public String addStudent(@ModelAttribute("employee") Employee employee) {
         employeeService.addEmployee(employee);
         return "redirect:/employees"; // Redirect to the student list page

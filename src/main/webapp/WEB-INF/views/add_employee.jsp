@@ -27,12 +27,10 @@
         <form:errors path="cni" cssClass="text-warning" />
     </fieldset>
 
-    <div class="form-group">
-        <form:label path="cni">Project</form:label>
-        <form:select class="form-control" id="skills" value="#{projects}" layout="pageDirection" required="true">
-            <f:selectItems value="#{addEmployeeBean.availableSkills}" />
-        </form:select>
-    </div>
+    <form:select path="project">
+        <form:option value="NONE"> --SELECT--</form:option>
+        <form:options items="${projects}"></form:options>
+    </form:select>
 
     <button type="submit" class="btn btn-success">Save</button>
 </form:form>
